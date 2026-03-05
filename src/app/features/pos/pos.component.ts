@@ -43,11 +43,16 @@ import { CurrencyPipe } from '../../shared/pipes/common.pipes';
     <mat-sidenav-container class="pos-container">
       <mat-sidenav mode="side" opened class="cart-sidebar">
         <div class="cart-header">
-          <h2>Cart</h2>
+          <div>
+            <p class="panel-label">Current Order</p>
+            <h2>Cart</h2>
+          </div>
           <button
             mat-icon-button
+            class="clear-btn"
             (click)="cartService.clearCart()"
             *ngIf="cartService.items$().length"
+            aria-label="Clear cart"
           >
             <mat-icon>delete_sweep</mat-icon>
           </button>
@@ -55,23 +60,25 @@ import { CurrencyPipe } from '../../shared/pipes/common.pipes';
 
         <div class="cart-items" *ngIf="cartService.items$() as items">
           <div *ngIf="items.length === 0" class="empty-cart">
+            <mat-icon>shopping_cart</mat-icon>
             <p>Cart is empty</p>
+            <span>Add products to start billing</span>
           </div>
 
           <mat-card *ngFor="let item of items" class="cart-item-card">
             <mat-card-content>
               <div class="item-header">
                 <h3>{{ item.product.name }}</h3>
+                <span>{{ item.subtotal | currency }}</span>
               </div>
-              <div class="item-details">
-                <p><strong>Price:</strong> {{ item.product.price | currency }}</p>
-                <p><strong>Qty:</strong> {{ item.quantity }} {{ item.product.unit }}</p>
-                <p><strong>Subtotal:</strong> {{ item.subtotal | currency }}</p>
-              </div>
+              <p class="item-meta">
+                {{ item.product.price | currency }} / {{ item.product.unit }}
+              </p>
               <div class="item-controls">
                 <button
                   mat-icon-button
                   (click)="cartService.updateQuantity(item.product.id, item.quantity - 1)"
+                  aria-label="Decrease quantity"
                 >
                   <mat-icon>remove</mat-icon>
                 </button>
@@ -79,6 +86,7 @@ import { CurrencyPipe } from '../../shared/pipes/common.pipes';
                 <button
                   mat-icon-button
                   (click)="cartService.updateQuantity(item.product.id, item.quantity + 1)"
+                  aria-label="Increase quantity"
                 >
                   <mat-icon>add</mat-icon>
                 </button>
@@ -86,6 +94,7 @@ import { CurrencyPipe } from '../../shared/pipes/common.pipes';
                   mat-icon-button
                   color="warn"
                   (click)="cartService.removeFromCart(item.product.id)"
+                  aria-label="Remove item"
                 >
                   <mat-icon>delete</mat-icon>
                 </button>
@@ -96,52 +105,81 @@ import { CurrencyPipe } from '../../shared/pipes/common.pipes';
 
         <div class="cart-summary">
           <div class="summary-row">
-            <span>Subtotal:</span>
+            <span>Subtotal</span>
             <span>{{ cartService.subtotal$() | currency }}</span>
           </div>
           <div class="summary-row">
-            <span>Tax (18%):</span>
+            <span>Tax (18%)</span>
             <span>{{ cartService.tax$() | currency }}</span>
           </div>
           <div class="summary-row total">
-            <span>Total:</span>
+            <span>Total</span>
             <span>{{ cartService.total$() | currency }}</span>
           </div>
           <button
             mat-raised-button
-            color="primary"
             class="checkout-btn btn-success"
             [disabled]="!cartService.itemCount$()"
             routerLink="/billing"
           >
-            Checkout
+            Proceed To Billing
           </button>
         </div>
       </mat-sidenav>
 
       <mat-sidenav-content class="products-content">
-        <div class="filters">
-          <mat-form-field>
-            <mat-label>Search Products</mat-label>
-            <input matInput [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)" placeholder="Search..." />
-          </mat-form-field>
+        <section class="products-header">
+          <div>
+            <p class="panel-label">Counter View</p>
+            <h1>Point Of Sale</h1>
+          </div>
+          <div class="quick-stats">
+            <div class="stat-pill">
+              <span>Products</span>
+              <strong>{{ filteredProducts().length }}</strong>
+            </div>
+            <div class="stat-pill">
+              <span>Cart Items</span>
+              <strong>{{ cartService.itemCount$() }}</strong>
+            </div>
+          </div>
+        </section>
 
-          <mat-form-field>
-            <mat-label>Category</mat-label>
-            <mat-select [ngModel]="selectedCategory()" (ngModelChange)="selectedCategory.set($event)">
-              <mat-option value="">All Categories</mat-option>
-              <mat-option *ngFor="let cat of productService.products$().length ? categories() : []" [value]="cat">
-                {{ cat }}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
-        </div>
+        <mat-card class="filters">
+          <mat-card-content>
+            <div class="filter-row">
+              <mat-form-field appearance="fill">
+                <input
+                  matInput
+                  [ngModel]="searchQuery()"
+                  (ngModelChange)="searchQuery.set($event)"
+                  placeholder="Search by name or barcode..."
+                  aria-label="Search products"
+                />
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-select
+                  [ngModel]="selectedCategory()"
+                  (ngModelChange)="selectedCategory.set($event)"
+                  placeholder="All Categories"
+                  aria-label="Category"
+                >
+                  <mat-option value="">All Categories</mat-option>
+                  <mat-option
+                    *ngFor="let cat of productService.products$().length ? categories() : []"
+                    [value]="cat"
+                  >
+                    {{ cat }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </mat-card-content>
+        </mat-card>
 
         <div class="products-grid">
-          <mat-card
-            *ngFor="let product of filteredProducts()"
-            class="product-card"
-          >
+          <mat-card *ngFor="let product of filteredProducts()" class="product-card">
             <div class="product-image">
               <img
                 [src]="product.image"
@@ -152,35 +190,34 @@ import { CurrencyPipe } from '../../shared/pipes/common.pipes';
             <mat-card-content>
               <h3>{{ product.name }}</h3>
               <p class="category">{{ product.category }}</p>
-              <p class="price">{{ product.price | currency }}</p>
-              <p class="stock" [class.low]="product.stock < 50">
-                Stock: {{ product.stock }} {{ product.unit }}
-               
-              </p>
-               @if (product.stock <= 0) {
-                  <span>(out of stock)</span>
-                }@else {
-              <div class="quantity-control">
-                <input
-                  type="number"
-                  [(ngModel)]="quantities[product.id]"
-                  min="1"
-                  [max]="product.stock"
-                  class="qty-input"
-                />
-                <button class="btn-primary"
-                  mat-raised-button
-                  color="btn-primary"
-                  (click)="addToCart(product)"
-                 
-                  [disabled]="product.stock <quantities[product.id] || !quantities[product.id]"
-                >
-                  <mat-icon>add_shopping_cart</mat-icon>
-                  Add
-                </button>
-               
+              <div class="product-footer">
+                <p class="price">{{ product.price | currency }}</p>
+                <p class="stock" [class.low]="product.stock < 50">
+                  {{ product.stock }} {{ product.unit }}
+                </p>
               </div>
-               }
+              @if (product.stock <= 0) {
+                <span class="out-of-stock">Out of stock</span>
+              } @else {
+                <div class="quantity-control">
+                  <input
+                    type="number"
+                    [(ngModel)]="quantities[product.id]"
+                    min="1"
+                    [max]="product.stock"
+                    class="qty-input"
+                  />
+                  <button
+                    class="btn-primary"
+                    mat-raised-button
+                    (click)="addToCart(product)"
+                    [disabled]="product.stock < quantities[product.id] || !quantities[product.id]"
+                  >
+                    <mat-icon>add_shopping_cart</mat-icon>
+                    Add
+                  </button>
+                </div>
+              }
             </mat-card-content>
           </mat-card>
         </div>
@@ -191,46 +228,91 @@ import { CurrencyPipe } from '../../shared/pipes/common.pipes';
     `
       .pos-container {
         height: calc(100vh - 64px);
+        background:
+          radial-gradient(circle at 20% -10%, rgba(255, 193, 7, 0.18), transparent 38%),
+          linear-gradient(180deg, #fffdfa 0%, #f7f8fb 50%, #f1f5f9 100%);
+      }
+
+      .panel-label {
+        margin: 0;
+        font-size: 11px;
+        text-transform: uppercase;
+        color: #64748b;
       }
 
       .cart-sidebar {
-        width: 350px;
+        width: 360px;
         display: flex;
         flex-direction: column;
-        border-right: 1px solid #e0e0e0;
+        border-right: 1px solid #e2e8f0;
+        background: #ffffff;
       }
 
       .cart-header {
-        padding: 15px;
-        border-bottom: 1px solid #e0e0e0;
+        padding: 18px 16px;
+        border-bottom: 1px solid #e2e8f0;
         display: flex;
         justify-content: space-between;
         align-items: center;
       }
 
       .cart-header h2 {
-        margin: 0;
+        margin: 2px 0 0;
+        font-size: 22px;
       }
 
       .cart-items {
         flex: 1;
         overflow-y: auto;
-        padding: 15px;
+        padding: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
       }
 
       .empty-cart {
+        height: 100%;
+        min-height: 220px;
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
-        height: 100%;
+        gap: 6px;
+        border: 1px dashed #cbd5e1;
+        border-radius: 16px;
+        color: #64748b;
+        background: #f8fafc;
+      }
+
+      .empty-cart mat-icon {
+        color: #94a3b8;
+        font-size: 30px;
+        width: 30px;
+        height: 30px;
+      }
+
+      .empty-cart p {
+        margin: 0;
+        font-weight: 600;
+        color: #0f172a;
+      }
+
+      .empty-cart span {
+        font-size: 12px;
       }
 
       .cart-item-card {
-        margin-bottom: 10px;
+        margin: 0;
+        border: 1px solid #e2e8f0;
+        box-shadow: none;
+        border-radius: 14px;
       }
 
       .item-header {
-        margin-bottom: 10px;
+        margin-bottom: 4px;
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
       }
 
       .item-header h3 {
@@ -238,92 +320,148 @@ import { CurrencyPipe } from '../../shared/pipes/common.pipes';
         font-size: 14px;
       }
 
-      .item-details {
-        font-size: 12px;
-        margin-bottom: 10px;
+      .item-header span {
+        font-size: 14px;
+        font-weight: 700;
       }
 
-      .item-details p {
-        margin: 5px 0;
+      .item-meta {
+        margin: 0;
+        font-size: 12px;
+        color: #64748b;
       }
 
       .item-controls {
+        margin-top: 10px;
         display: flex;
         align-items: center;
-        justify-content: space-around;
+        justify-content: space-between;
       }
 
-      .item-controls button {
-        padding: 0;
+      .item-controls span {
+        text-align: center;
+        font-weight: 600;
       }
 
       .cart-summary {
-        padding: 15px;
-        border-top: 1px solid #e0e0e0;
-        background-color: #f5f5f5;
+        padding: 14px;
+        border-top: 1px solid #e2e8f0;
+        background: #f8fafc;
       }
 
       .summary-row {
         display: flex;
         justify-content: space-between;
-        margin-bottom: 10px;
+        margin-bottom: 8px;
         font-size: 14px;
+        color: #334155;
       }
 
       .summary-row.total {
-        font-weight: bold;
-        font-size: 16px;
+        color: #0f172a;
+        font-weight: 700;
+        font-size: 18px;
+        margin-top: 6px;
         padding-top: 10px;
-        border-top: 1px solid #e0e0e0;
+        border-top: 1px dashed #cbd5e1;
       }
 
       .checkout-btn {
         width: 100%;
         margin-top: 10px;
       }
-      .checkout-btn :disabled{
-        background-color: #ccc !important;
-        color: #666 !important;
-        cursor: not-allowed !important;
+
+      .checkout-btn:disabled {
+        background: #cbd5e1 !important;
+        color: #64748b !important;
       }
 
       .products-content {
         padding: 20px;
       }
 
-      .filters {
+      .products-header {
         display: flex;
-        gap: 20px;
-        margin-bottom: 30px;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 14px;
+        margin-bottom: 16px;
+      }
+
+      .products-header h1 {
+        margin: 2px 0 0;
+        font-size: 30px;
+        line-height: 1.15;
+      }
+
+      .quick-stats {
+        display: flex;
+        gap: 10px;
+      }
+
+      .stat-pill {
+        min-width: 112px;
+        padding: 10px 12px;
+        border-radius: 12px;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+      }
+
+      .stat-pill span {
+        display: block;
+        font-size: 11px;
+        text-transform: uppercase;
+        color: #64748b;
+      }
+
+      .stat-pill strong {
+        font-size: 20px;
+        line-height: 1.2;
+      }
+
+      .filters {
+        background: var(--blinkit-card);
+        border-radius: var(--radius-lg);
+        margin-bottom: 18px;
+        box-shadow: var(--shadow-sm);
+        border: 1px solid rgba(0, 0, 0, 0.02);
+      }
+
+      .filter-row {
+        display: flex;
+        gap: 16px;
         flex-wrap: wrap;
       }
 
-      mat-form-field {
+      .filter-row mat-form-field {
         flex: 1;
         min-width: 200px;
       }
 
       .products-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: 20px;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 14px;
       }
 
       .product-card {
-        cursor: pointer;
-        transition: transform 0.2s;
+        overflow: hidden;
+        border-radius: 16px;
+        border: 1px solid #e2e8f0;
+        box-shadow: none;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
       }
 
       .product-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        transform: translateY(-3px);
+        box-shadow: 0 16px 24px -20px rgba(15, 23, 42, 0.55);
       }
 
       .product-image {
         width: 100%;
-        height: 150px;
+        height: 148px;
         overflow: hidden;
-        background-color: #f0f0f0;
+        background: #f1f5f9;
       }
 
       .product-image img {
@@ -333,63 +471,106 @@ import { CurrencyPipe } from '../../shared/pipes/common.pipes';
       }
 
       .product-card h3 {
-        margin: 10px 0 5px;
-        font-size: 16px;
+        margin: 10px 0 2px;
+        font-size: 15px;
       }
 
       .category {
-        color: #999;
+        color: #64748b;
         font-size: 12px;
         margin: 0;
       }
 
+      .product-footer {
+        margin: 8px 0 4px;
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+      }
+
       .price {
-        color: var(--mdc-theme-primary);
-        font-weight: bold;
+        color: #0f172a;
+        font-weight: 700;
         font-size: 18px;
-        margin: 10px 0;
+        margin: 0;
       }
 
       .stock {
         font-size: 12px;
-        margin: 5px 0;
+        margin: 0;
+        color: #64748b;
       }
 
       .stock.low {
-        color: #f44336;
-        font-weight: bold;
+        color: #dc2626;
+        font-weight: 600;
+      }
+
+      .out-of-stock {
+        display: block;
+        margin-top: 8px;
+        color: #dc2626;
+        font-size: 12px;
+        font-weight: 600;
       }
 
       .quantity-control {
         display: flex;
-        gap: 10px;
+        gap: 8px;
         margin-top: 10px;
       }
 
       .qty-input {
-        width: 50px;
-        padding: 5px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
+        width: 60px;
+        padding: 8px 6px;
+        border: 1px solid #cbd5e1;
+        border-radius: 10px;
+        text-align: center;
       }
 
       .quantity-control button {
         flex: 1;
       }
 
-      @media (max-width: 1200px) {
+      @media (max-width: 1300px) {
+        .cart-sidebar {
+          width: 320px;
+        }
+
         .products-grid {
-          grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+          grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+        }
+      }
+
+      @media (max-width: 1024px) {
+        .products-header {
+          flex-direction: column;
+        }
+
+        .filter-row {
+          flex-direction: column;
         }
       }
 
       @media (max-width: 768px) {
         .cart-sidebar {
-          width: 250px;
+          width: 260px;
+        }
+
+        .products-content {
+          padding: 14px;
+        }
+
+        .products-header h1 {
+          font-size: 24px;
+        }
+
+        .stat-pill {
+          flex: 1;
         }
 
         .products-grid {
-          grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+          grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
         }
       }
     `,

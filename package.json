@@ -31,7 +31,8 @@
     "@angular/cli": "^18.0.0",
     "@angular/compiler-cli": "^18.0.0",
     "@types/node": "^20.0.0",
-    "typescript": "~5.4.0",
-    "sass": "^1.75.0"
+    "angular-cli-ghpages": "^3.0.2",
+    "sass": "^1.75.0",
+    "typescript": "~5.4.0"
   }
 }
