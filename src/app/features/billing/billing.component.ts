@@ -96,20 +96,23 @@ import { CurrencyPipe } from '../../shared/pipes/common.pipes';
               <mat-card-title>Billing Information</mat-card-title>
             </mat-card-header>
             <mat-card-content>
-              <form [formGroup]="billingForm">
-                <mat-form-field class="full-width" style="">
-                  <mat-label>Customer Name (Optional)</mat-label>
-                  <input matInput placeholder="Customer Name (Optional)" formControlName="customerName" />
-                </mat-form-field>
+              <form [formGroup]="billingForm" class="billing-form">
+                <div class="form-grid">
+                  <mat-form-field class="full-width">
+                    <mat-label>Customer Name (Optional)</mat-label>
+                    <input matInput formControlName="customerName" placeholder="Customer Name (Optional)" />
+                  </mat-form-field>
 
-                <mat-form-field class="full-width">
-                  <mat-label>Customer WhatsApp Number (Optional)</mat-label>
-                  <input
-                    matInput
-                    placeholder="e.g. 919876543210"
-                    formControlName="customerPhone"
-                  />
-                </mat-form-field>
+                  <mat-form-field class="full-width" style="display: none;">
+                    <mat-label>WhatsApp Number (Optional)</mat-label>
+                    <input
+                      matInput
+                      placeholder="e.g. 919876543210"
+                      formControlName="customerPhone"
+                    />
+                    <mat-hint>10 to 15 digits</mat-hint>
+                  </mat-form-field>
+                </div>
 
                 <mat-form-field class="full-width">
                   <mat-label>Payment Type</mat-label>
@@ -120,7 +123,6 @@ import { CurrencyPipe } from '../../shared/pipes/common.pipes';
                   </mat-select>
                 </mat-form-field>
 
-                <mat-divider></mat-divider>
 
                 <div class="summary-section">
                   <div class="summary-row">
@@ -192,8 +194,20 @@ import { CurrencyPipe } from '../../shared/pipes/common.pipes';
         height: 100%;
       }
 
-      .full-width {
+              .full-width {
         width: 100%;
+      }
+
+      .billing-form {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
       }
 
       mat-card-header {
@@ -242,7 +256,7 @@ import { CurrencyPipe } from '../../shared/pipes/common.pipes';
       }
 
       mat-form-field {
-        margin-bottom: 16px;
+        margin-bottom: 8px;
         width: 100%;
       }
 
@@ -331,6 +345,10 @@ import { CurrencyPipe } from '../../shared/pipes/common.pipes';
           grid-template-columns: 1fr;
         }
 
+        .form-grid {
+          grid-template-columns: 1fr;
+        }
+
         .grid-item {
           min-height: auto;
         }
@@ -368,9 +386,9 @@ import { CurrencyPipe } from '../../shared/pipes/common.pipes';
 })
 export class BillingComponent implements OnInit {
   billingForm = this.fb.group({
-    customerName: ['Hemanth Kumar', Validators.maxLength(50)],
+    customerName: ['', Validators.maxLength(50)],
     customerPhone: ['', Validators.pattern(/^\+?[0-9]{10,15}$/)],
-    paymentType: ['Please select a payment type', Validators.required],
+    paymentType: ['', Validators.required],
   });
 
   constructor(

@@ -30,7 +30,7 @@ import { takeUntil } from 'rxjs/operators';
       <mat-card class="receipt-card" #receipt>
         <div class="receipt-content">
           <div class="header">
-            <h1>H Mart</h1>
+            <h1>Departmental Store</h1>
             <p class="subtitle">Receipt / Invoice</p>
             <mat-divider></mat-divider>
           </div>
@@ -94,7 +94,7 @@ import { takeUntil } from 'rxjs/operators';
 
           <div class="footer">
             <p><strong>Thank you for your purchase.</strong></p>
-            <p>We appreciate your business. Please visit again!</p>
+            <p>Please visit again!</p>
             <p class="timestamp">{{ order.orderDate | date: 'medium' }}</p>
           </div>
         </div>

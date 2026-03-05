@@ -1,14 +1,14 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, HostListener, ViewChild, ElementRef, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatSelectModule } from '@angular/material/select';
+import { MatSelect, MatSelectModule } from '@angular/material/select';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatTableModule } from '@angular/material/table';
@@ -150,6 +150,7 @@ import { CurrencyPipe } from '../../shared/pipes/common.pipes';
             <div class="filter-row">
               <mat-form-field appearance="fill">
                 <input
+                  #searchInput
                   matInput
                   [ngModel]="searchQuery()"
                   (ngModelChange)="searchQuery.set($event)"
@@ -160,6 +161,7 @@ import { CurrencyPipe } from '../../shared/pipes/common.pipes';
 
               <mat-form-field appearance="fill">
                 <mat-select
+                  #categorySelect
                   [ngModel]="selectedCategory()"
                   (ngModelChange)="selectedCategory.set($event)"
                   placeholder="All Categories"
@@ -577,6 +579,9 @@ import { CurrencyPipe } from '../../shared/pipes/common.pipes';
   ],
 })
 export class PosComponent {
+  @ViewChild('searchInput') searchInput?: ElementRef<HTMLInputElement>;
+  @ViewChild('categorySelect') categorySelect?: MatSelect;
+
   searchQuery = signal('');
   selectedCategory = signal('');
   quantities: { [key: number]: number } = {};
@@ -600,7 +605,8 @@ export class PosComponent {
 
   constructor(
     public productService: ProductService,
-    public cartService: CartService
+    public cartService: CartService,
+    private router: Router
   ) {
     // Initialize quantities
     this.productService.getProducts().forEach((p) => {
@@ -612,5 +618,36 @@ export class PosComponent {
     const quantity = this.quantities[product.id] || 1;
     this.cartService.addToCart(product, quantity);
     this.quantities[product.id] = 1;
+  }
+
+  @HostListener('window:keydown', ['$event'])
+  onGlobalKeydown(event: KeyboardEvent): void {
+    const target = event.target as HTMLElement | null;
+    const tagName = target?.tagName?.toLowerCase() || '';
+    const isTypingTarget = tagName === 'input' || tagName === 'textarea';
+
+    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+      event.preventDefault();
+      this.searchInput?.nativeElement.focus();
+      this.searchInput?.nativeElement.select();
+      return;
+    }
+
+    if (event.altKey && event.key.toLowerCase() === 'c') {
+      event.preventDefault();
+      this.categorySelect?.open();
+      return;
+    }
+
+    if (event.key === 'Escape') {
+      this.searchQuery.set('');
+      this.selectedCategory.set('');
+      return;
+    }
+
+    if (!isTypingTarget && event.key === 'F8' && this.cartService.itemCount$() > 0) {
+      event.preventDefault();
+      this.router.navigate(['/billing']);
+    }
   }
 }

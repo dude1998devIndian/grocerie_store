@@ -70,6 +70,28 @@ import { Product } from '../../../core/models/index';
           <mat-label>Description</mat-label>
           <input matInput formControlName="description" />
         </mat-form-field>
+
+        <mat-form-field class="full-width">
+          <mat-label>Image URL</mat-label>
+          <input matInput formControlName="image" placeholder="https://example.com/product.jpg" />
+        </mat-form-field>
+
+        <div class="image-upload-row">
+          <input
+            #imageFileInput
+            type="file"
+            accept="image/*"
+            (change)="onImageFileChange($event)"
+          />
+          <button mat-stroked-button type="button" (click)="imageFileInput.click()">
+            Upload Image
+          </button>
+          <span class="hint">JPG, PNG, WEBP</span>
+        </div>
+
+        <div class="preview" *ngIf="imagePreview">
+          <img [src]="imagePreview" alt="Product preview" />
+        </div>
       </form>
     </mat-dialog-content>
     <mat-dialog-actions align="end">
@@ -90,11 +112,37 @@ import { Product } from '../../../core/models/index';
         width: 100%;
         margin-bottom: 15px;
       }
+
+      .image-upload-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+
+      .image-upload-row input[type='file'] {
+        display: none;
+      }
+
+      .hint {
+        font-size: 12px;
+        color: var(--text-secondary);
+      }
+
+      .preview img {
+        width: 96px;
+        height: 96px;
+        object-fit: cover;
+        border-radius: 12px;
+        border: 1px solid var(--border-color);
+      }
     `,
   ],
 })
 export class 
 ProductFormComponent {
+  imagePreview = '';
+
   form = this.fb.group({
     name: ['', Validators.required],
     category: ['', Validators.required],
@@ -103,6 +151,7 @@ ProductFormComponent {
     stock: [0, Validators.required],
     barcode: ['', Validators.required],
     description: [''],
+    image: [''],
   });
 
   categories: string[] = [];
@@ -118,22 +167,43 @@ ProductFormComponent {
 
     if (data.product) {
       this.form.patchValue(data.product);
+      this.imagePreview = data.product.image || '';
     }
+  }
+
+  onImageFileChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) {
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = String(reader.result || '');
+      this.form.patchValue({ image: result });
+      this.imagePreview = result;
+    };
+    reader.readAsDataURL(file);
   }
 
   save(): void {
     if (this.form.valid) {
       const formValue = this.form.value;
+      const payload = {
+        ...formValue,
+        image: formValue.image?.trim() || undefined,
+      };
       if (this.data.product) {
         this.productService.updateProduct({
           ...this.data.product,
-          ...formValue,
+          ...payload,
         } as Product);
         this.snackBar.open('Product updated successfully', 'Close', {
           duration: 2500,
         });
       } else {
-        this.productService.addProduct(formValue as Omit<Product, 'id'>);
+        this.productService.addProduct(payload as Omit<Product, 'id'>);
         this.snackBar.open('Product added successfully', 'Close', {
           duration: 2500,
         });

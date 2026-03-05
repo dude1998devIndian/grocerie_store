@@ -73,6 +73,20 @@ import { CurrencyPipe } from '../../shared/pipes/common.pipes';
       <mat-card class="products-table">
         <mat-card-content>
           <table mat-table [dataSource]="filteredProducts()">
+            <ng-container matColumnDef="image">
+              <th mat-header-cell *matHeaderCellDef>Image</th>
+              <td mat-cell *matCellDef="let element">
+                <img
+                  [src]="element.image"
+                  [alt]="element.name"
+                  width="36"
+                  height="36"
+                  style="object-fit:cover;border-radius:8px;border:1px solid var(--border-color);"
+                  onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22300%22%3E%3Crect fill=%22%23f1f5f9%22 width=%22300%22 height=%22300%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-family=%22Arial,%20sans-serif%22 font-size=%2218%22 fill=%22%2364748b%22%3ENo%20Image%3C/text%3E%3C/svg%3E'"
+                />
+              </td>
+            </ng-container>
+
             <ng-container matColumnDef="id">
               <th mat-header-cell *matHeaderCellDef>ID</th>
               <td mat-cell *matCellDef="let element">{{ element.id }}</td>
@@ -275,6 +289,7 @@ import { CurrencyPipe } from '../../shared/pipes/common.pipes';
 })
 export class ProductsComponent implements OnInit {
   displayedColumns: string[] = [
+    'image',
     'id',
     'name',
     'category',

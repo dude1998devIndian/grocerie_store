@@ -65,7 +65,7 @@ export class ProductService {
           stock: Math.floor(Math.random() * 500) + 50,
           barcode: `12345${String(id).padStart(5, '0')}`,
           description: `High quality ${item} from local suppliers`,
-          image: `https://via.placeholder.com/300x300?text=${item.replace(/ /g, '+')}`,
+          image: this.buildPlaceholderImage(item),
         });
       }
     }
@@ -85,11 +85,26 @@ export class ProductService {
     return (prices[category] || (() => Math.random() * 100))();
   }
 
+  private buildPlaceholderImage(name: string): string {
+    const safeName = name.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><rect fill='#f1f5f9' width='300' height='300'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-family='Arial, sans-serif' font-size='18' fill='#64748b'>${safeName}</text></svg>`;
+    return `data:image/svg+xml,${encodeURIComponent(svg)}`;
+  }
+
   private loadProducts(): void {
     const saved = localStorage.getItem('products');
     if (saved) {
       try {
-        this.products.set(JSON.parse(saved));
+        const parsed = JSON.parse(saved) as Product[];
+        const migrated = parsed.map((product) => ({
+          ...product,
+          image:
+            !product.image || product.image.includes('via.placeholder.com')
+              ? this.buildPlaceholderImage(product.name)
+              : product.image,
+        }));
+        this.products.set(migrated);
+        this.saveProducts();
       } catch {
         this.saveProducts();
       }
@@ -128,6 +143,7 @@ export class ProductService {
   addProduct(product: Omit<Product, 'id'>): Product {
     const newProduct: Product = {
       ...product,
+      image: product.image || this.buildPlaceholderImage(product.name),
       id: Math.max(...this.products().map((p) => p.id), 0) + 1,
     };
     this.products.set([...this.products(), newProduct]);
@@ -136,7 +152,11 @@ export class ProductService {
   }
 
   updateProduct(product: Product): void {
-    const products = this.products().map((p) => (p.id === product.id ? product : p));
+    const updated = {
+      ...product,
+      image: product.image || this.buildPlaceholderImage(product.name),
+    };
+    const products = this.products().map((p) => (p.id === updated.id ? updated : p));
     this.products.set(products);
     this.saveProducts();
   }
