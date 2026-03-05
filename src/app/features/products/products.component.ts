@@ -113,7 +113,7 @@ import { CurrencyPipe } from '../../shared/pipes/common.pipes';
               <th mat-header-cell *matHeaderCellDef>Stock</th>
               <td mat-cell *matCellDef="let element">
                 <span
-                  [class.low-stock]="element.stock < 50"
+                  [class.low-stock]="element.stock < 1"
                 >
                   {{ element.stock }} {{ element.unit }}
                 </span>
