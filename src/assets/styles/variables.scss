@@ -1,0 +1,65 @@
+// Material Icons
+@import url("https://fonts.googleapis.com/icon?family=Material+Icons");
+
+// Material Variables
+$primary-color: #3f51b5;
+$accent-color: #ff4081;
+$warn-color: #f44336;
+$success-color: #4caf50;
+$info-color: #2196f3;
+
+// Mixins
+@mixin elevation($level: 1) {
+  box-shadow: 0 #{$level}px #{$level}px rgba(0, 0, 0, 0.#{$level});
+}
+
+// General Styles
+body {
+  font-family: 'Roboto', 'Helvetica Neue', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+// Responsive Utilities
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+
+  @media (max-width: 768px) {
+    padding: 0 15px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 0 10px;
+  }
+}
+
+// Grid System
+.row {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+
+  > div {
+    flex: 1;
+    min-width: 250px;
+  }
+}
+
+// Text Utilities
+.text-primary {
+  color: $primary-color;
+}
+
+.text-accent {
+  color: $accent-color;
+}
+
+.text-muted {
+  color: #999;
+}
+
+.font-bold {
+  font-weight: 500;
+}
