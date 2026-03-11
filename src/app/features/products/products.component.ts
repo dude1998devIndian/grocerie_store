@@ -318,7 +318,8 @@ export class ProductsComponent implements OnInit {
 
   set selectedCategory(value: string) {
     this.selectedCategorySignal.set(value ?? '');
-  }
+  }  
+  // dist\grocery-store-pos
 
   filteredProducts = computed(() => {
     let filtered = this.products();
