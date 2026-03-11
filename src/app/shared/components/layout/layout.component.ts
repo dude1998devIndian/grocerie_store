@@ -8,6 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { MatBadgeModule } from '@angular/material/badge';
 import { CartService } from '../../../core/services/cart.service';
+import { ThemeService } from '../../../core/services/theme.service';
 
 @Component({
   selector: 'app-layout',
@@ -33,6 +34,14 @@ import { CartService } from '../../../core/services/cart.service';
         <mat-icon>menu</mat-icon>
       </button>
       <span class="spacer">Grocery Store POS</span>
+      <button
+        mat-icon-button
+        (click)="theme.toggle()"
+        [attr.aria-label]="theme.isDark() ? 'Switch to light theme' : 'Switch to dark theme'"
+        title="Toggle theme"
+      >
+        <mat-icon>{{ theme.isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+      </button>
       <button
         mat-icon-button
         routerLink="/billing"
@@ -102,6 +111,10 @@ import { CartService } from '../../../core/services/cart.service';
         font-size: 18px;
       }
 
+      .spacer {
+        flex: 1 1 auto;
+      }
+
       .toolbar-container {
         display: flex;
         align-items: center;
@@ -159,7 +172,7 @@ import { CartService } from '../../../core/services/cart.service';
 
       .search-input:focus {
         outline: none;
-        background: white;
+        background: var(--blinkit-field-bg);
         border-color: var(--blinkit-primary);
         box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.1);
       }
@@ -221,13 +234,13 @@ import { CartService } from '../../../core/services/cart.service';
       }
 
       mat-list-item.active {
-        background: #fffbeb;
+        background: var(--blinkit-nav-active-bg);
         color: var(--blinkit-primary);
         font-weight: 600;
       }
 
       mat-list-item:hover:not(.active) {
-        background: #f9fafb;
+        background: var(--blinkit-nav-hover-bg);
       }
 
       .content {
@@ -270,7 +283,10 @@ import { CartService } from '../../../core/services/cart.service';
 export class LayoutComponent implements OnInit {
   isMobile = false;
 
-  constructor(public cartService: CartService) {}
+  constructor(
+    public cartService: CartService,
+    public theme: ThemeService
+  ) {}
 
   ngOnInit(): void {
     this.checkMobile();

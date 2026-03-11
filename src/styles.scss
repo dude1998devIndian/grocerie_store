@@ -5,18 +5,58 @@
 @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
 @import url('https://fonts.googleapis.com/css2?family=Material+Icons+Outlined');
 
-// Blinkit color variables
+@include mat.core();
+
+$light-theme: mat.define-theme(
+  (
+    color: (
+      theme-type: light,
+      primary: mat.$yellow-palette,
+      tertiary: mat.$rose-palette,
+    ),
+    typography: (
+      brand-family: 'Inter',
+      plain-family: 'Inter',
+    ),
+  )
+);
+
+$dark-theme: mat.define-theme(
+  (
+    color: (
+      theme-type: dark,
+      primary: mat.$yellow-palette,
+      tertiary: mat.$rose-palette,
+    ),
+    typography: (
+      brand-family: 'Inter',
+      plain-family: 'Inter',
+    ),
+  )
+);
+
+// Blinkit color variables (light by default)
 :root {
+  @include mat.all-component-themes($light-theme);
+
   --blinkit-primary: #ffc107;
   --blinkit-primary-hover: #ffb300;
   --blinkit-dark: #0f172a;
   --blinkit-bg: #f6f7f9;
   --blinkit-card: #ffffff;
+  --blinkit-field-bg: #ffffff;
+  --blinkit-table-head: #f9fafb;
+  --blinkit-table-row-hover: #fafbfc;
+  --blinkit-muted-bg: #f1f5f9;
+  --blinkit-nav-active-bg: #fffbeb;
+  --blinkit-nav-hover-bg: #f9fafb;
+  --blinkit-hover-highlight: rgba(255, 193, 7, 0.1);
   --blinkit-success: #22c55e;
   --blinkit-error: #ef4444;
   --text-primary: #0f172a;
   --text-secondary: #6b7280;
   --border-color: #e5e7eb;
+  --card-border: rgba(0, 0, 0, 0.02);
   --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
   --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
   --shadow-lg: 0 6px 20px rgba(0,0,0,0.08);
@@ -27,10 +67,39 @@
   --radius-xl: 20px;
   --transition-fast: all 0.15s ease;
   --transition-normal: all 0.2s ease;
+  --scrollbar-thumb: rgba(0,0,0,0.15);
+  --scrollbar-thumb-hover: rgba(0,0,0,0.25);
+  --disabled-bg: #cbd5e1;
+  --disabled-text: #64748b;
+  color-scheme: light;
 
 }
 
-@include mat.core();
+:root[data-theme='dark'] {
+  @include mat.all-component-colors($dark-theme);
+
+  --blinkit-bg: #0b1220;
+  --blinkit-card: #0f172a;
+  --blinkit-field-bg: #0b162f;
+  --blinkit-table-head: #101c37;
+  --blinkit-table-row-hover: #132247;
+  --blinkit-muted-bg: #101c37;
+  --blinkit-nav-active-bg: rgba(255, 193, 7, 0.12);
+  --blinkit-nav-hover-bg: rgba(255, 255, 255, 0.04);
+  --text-primary: #e5e7eb;
+  --text-secondary: #94a3b8;
+  --border-color: rgba(226, 232, 240, 0.14);
+  --card-border: rgba(255, 255, 255, 0.06);
+  --shadow-sm: 0 2px 10px rgba(0,0,0,0.35);
+  --shadow-md: 0 6px 20px rgba(0,0,0,0.35);
+  --shadow-lg: 0 12px 32px rgba(0,0,0,0.4);
+  --shadow-xl: 0 18px 46px rgba(0,0,0,0.45);
+  --scrollbar-thumb: rgba(255,255,255,0.14);
+  --scrollbar-thumb-hover: rgba(255,255,255,0.22);
+  --disabled-bg: rgba(148, 163, 184, 0.22);
+  --disabled-text: rgba(226, 232, 240, 0.55);
+  color-scheme: dark;
+}
 
 /* global layout */
 * {
@@ -62,12 +131,12 @@ body {
   background: transparent;
 }
 *::-webkit-scrollbar-thumb {
-  background-color: rgba(0,0,0,0.15);
+  background-color: var(--scrollbar-thumb);
   border-radius: 4px;
   transition: var(--transition-fast);
 }
 *::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(0,0,0,0.25);
+  background-color: var(--scrollbar-thumb-hover);
 }
 
 .container {
@@ -83,7 +152,7 @@ body {
   background: var(--blinkit-card);
   box-shadow: var(--shadow-md);
   transition: var(--transition-normal);
-  border: 1px solid rgba(0,0,0,0.02);
+  border: 1px solid var(--card-border);
   overflow: hidden;
 }
 .card:hover {
@@ -200,11 +269,12 @@ p { margin: 4px 0; word-wrap: break-word; overflow-wrap: break-word; }
   height: 44px;
   border-radius: 25px;
   padding: 0 16px;
-  background: #fff;
+  background: var(--blinkit-field-bg);
   box-shadow: var(--shadow-sm);
   border: 1px solid var(--border-color);
   font-size: 14px;
   transition: var(--transition-fast);
+  color: var(--text-primary);
   
   &:focus {
     outline: none;
@@ -222,6 +292,8 @@ textarea:not(.mat-mdc-input-element) {
   border-radius: var(--radius-md);
   border: 1px solid var(--border-color);
   padding: 10px 12px;
+  background: var(--blinkit-field-bg);
+  color: var(--text-primary);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 14px;
   line-height: 1.5;
@@ -243,7 +315,7 @@ table {
   border-collapse: collapse;
   
   th {
-    background: #f9fafb;
+    background: var(--blinkit-table-head);
     padding: 14px 12px;
     text-align: left;
     font-weight: 1000;
@@ -262,7 +334,7 @@ table {
   }
   
   tr:hover {
-    background: #fafbfc;
+    background: var(--blinkit-table-row-hover);
   }
 }
 
@@ -315,11 +387,11 @@ table {
 
 /* Field and dropdown backgrounds */
 ::ng-deep .mat-mdc-text-field-wrapper {
-  background-color: #ffffff !important;
+  background-color: var(--blinkit-field-bg) !important;
 }
 
 ::ng-deep .mat-mdc-select-panel {
-  background-color: #ffffff !important;
+  background-color: var(--blinkit-field-bg) !important;
 }
 
 ::ng-deep .mat-mdc-option .mdc-list-item__primary-text {

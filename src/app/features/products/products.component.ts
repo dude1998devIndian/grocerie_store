@@ -192,7 +192,7 @@ import { CurrencyPipe } from '../../shared/pipes/common.pipes';
         border-radius: var(--radius-lg);
         margin-bottom: 24px;
         box-shadow: var(--shadow-sm);
-        border: 1px solid rgba(0, 0, 0, 0.02);
+        border: 1px solid var(--card-border);
       }
 
       .filter-row {
@@ -210,7 +210,7 @@ import { CurrencyPipe } from '../../shared/pipes/common.pipes';
         background: var(--blinkit-card);
         border-radius: var(--radius-lg);
         box-shadow: var(--shadow-md);
-        border: 1px solid rgba(0, 0, 0, 0.02);
+        border: 1px solid var(--card-border);
         overflow: hidden;
       }
 
@@ -220,7 +220,7 @@ import { CurrencyPipe } from '../../shared/pipes/common.pipes';
       }
 
       table th {
-        background: #f9fafb;
+        background: var(--blinkit-table-head);
         padding: 12px;
         text-align: left;
         font-weight: 600;
@@ -236,7 +236,7 @@ import { CurrencyPipe } from '../../shared/pipes/common.pipes';
       }
 
       table tr:hover {
-        background: #fafbfc;
+        background: var(--blinkit-table-row-hover);
       }
 
       .low-stock {
@@ -250,7 +250,7 @@ import { CurrencyPipe } from '../../shared/pipes/common.pipes';
       }
 
       button[mat-icon-button]:hover {
-        background: rgba(255, 193, 7, 0.1);
+        background: var(--blinkit-hover-highlight);
         color: var(--blinkit-primary);
       }
 
@@ -299,20 +299,40 @@ export class ProductsComponent implements OnInit {
     'actions',
   ];
 
-  searchTerm = '';
-  selectedCategory = '';
+  private searchTermSignal = signal('');
+  private selectedCategorySignal = signal('');
 
   products = computed(() => this.productService.getProducts());
   categories = computed(() => this.productService.getCategories());
+  get searchTerm(): string {
+    return this.searchTermSignal();
+  }
+
+  set searchTerm(value: string) {
+    this.searchTermSignal.set(value ?? '');
+  }
+
+  get selectedCategory(): string {
+    return this.selectedCategorySignal();
+  }
+
+  set selectedCategory(value: string) {
+    this.selectedCategorySignal.set(value ?? '');
+  }
+
   filteredProducts = computed(() => {
     let filtered = this.products();
 
-    if (this.searchTerm) {
-      filtered = this.productService.searchProducts(this.searchTerm);
+    const term = this.searchTermSignal().trim();
+
+    if (term) {
+      filtered = this.productService.searchProducts(term);
     }
 
-    if (this.selectedCategory) {
-      filtered = filtered.filter((p) => p.category === this.selectedCategory);
+    const category = this.selectedCategorySignal();
+
+    if (category) {
+      filtered = filtered.filter((p) => p.category === category);
     }
 
     return filtered;

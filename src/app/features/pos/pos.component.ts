@@ -232,27 +232,27 @@ import { CurrencyPipe } from '../../shared/pipes/common.pipes';
         height: calc(100vh - 64px);
         background:
           radial-gradient(circle at 20% -10%, rgba(255, 193, 7, 0.18), transparent 38%),
-          linear-gradient(180deg, #fffdfa 0%, #f7f8fb 50%, #f1f5f9 100%);
+          linear-gradient(180deg, var(--blinkit-bg) 0%, var(--blinkit-bg) 50%, var(--blinkit-muted-bg) 100%);
       }
 
       .panel-label {
         margin: 0;
         font-size: 11px;
         text-transform: uppercase;
-        color: #64748b;
+        color: var(--text-secondary);
       }
 
       .cart-sidebar {
         width: 360px;
         display: flex;
         flex-direction: column;
-        border-right: 1px solid #e2e8f0;
-        background: #ffffff;
+        border-right: 1px solid var(--border-color);
+        background: var(--blinkit-card);
       }
 
       .cart-header {
         padding: 18px 16px;
-        border-bottom: 1px solid #e2e8f0;
+        border-bottom: 1px solid var(--border-color);
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -280,14 +280,14 @@ import { CurrencyPipe } from '../../shared/pipes/common.pipes';
         align-items: center;
         justify-content: center;
         gap: 6px;
-        border: 1px dashed #cbd5e1;
+        border: 1px dashed var(--border-color);
         border-radius: 16px;
-        color: #64748b;
-        background: #f8fafc;
+        color: var(--text-secondary);
+        background: var(--blinkit-bg);
       }
 
       .empty-cart mat-icon {
-        color: #94a3b8;
+        color: var(--text-secondary);
         font-size: 30px;
         width: 30px;
         height: 30px;
@@ -296,7 +296,7 @@ import { CurrencyPipe } from '../../shared/pipes/common.pipes';
       .empty-cart p {
         margin: 0;
         font-weight: 600;
-        color: #0f172a;
+        color: var(--text-primary);
       }
 
       .empty-cart span {
@@ -305,9 +305,10 @@ import { CurrencyPipe } from '../../shared/pipes/common.pipes';
 
       .cart-item-card {
         margin: 0;
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--border-color);
         box-shadow: none;
         border-radius: 14px;
+        background: var(--blinkit-card);
       }
 
       .item-header {
@@ -330,7 +331,7 @@ import { CurrencyPipe } from '../../shared/pipes/common.pipes';
       .item-meta {
         margin: 0;
         font-size: 12px;
-        color: #64748b;
+        color: var(--text-secondary);
       }
 
       .item-controls {
@@ -347,8 +348,8 @@ import { CurrencyPipe } from '../../shared/pipes/common.pipes';
 
       .cart-summary {
         padding: 14px;
-        border-top: 1px solid #e2e8f0;
-        background: #f8fafc;
+        border-top: 1px solid var(--border-color);
+        background: var(--blinkit-table-head);
       }
 
       .summary-row {
@@ -356,16 +357,16 @@ import { CurrencyPipe } from '../../shared/pipes/common.pipes';
         justify-content: space-between;
         margin-bottom: 8px;
         font-size: 14px;
-        color: #334155;
+        color: var(--text-primary);
       }
 
       .summary-row.total {
-        color: #0f172a;
+        color: var(--text-primary);
         font-weight: 700;
         font-size: 18px;
         margin-top: 6px;
         padding-top: 10px;
-        border-top: 1px dashed #cbd5e1;
+        border-top: 1px dashed var(--border-color);
       }
 
       .checkout-btn {
@@ -374,8 +375,8 @@ import { CurrencyPipe } from '../../shared/pipes/common.pipes';
       }
 
       .checkout-btn:disabled {
-        background: #cbd5e1 !important;
-        color: #64748b !important;
+        background: var(--disabled-bg) !important;
+        color: var(--disabled-text) !important;
       }
 
       .products-content {
@@ -405,15 +406,15 @@ import { CurrencyPipe } from '../../shared/pipes/common.pipes';
         min-width: 112px;
         padding: 10px 12px;
         border-radius: 12px;
-        background: #ffffff;
-        border: 1px solid #e2e8f0;
+        background: var(--blinkit-card);
+        border: 1px solid var(--border-color);
       }
 
       .stat-pill span {
         display: block;
         font-size: 11px;
         text-transform: uppercase;
-        color: #64748b;
+        color: var(--text-secondary);
       }
 
       .stat-pill strong {
@@ -426,7 +427,7 @@ import { CurrencyPipe } from '../../shared/pipes/common.pipes';
         border-radius: var(--radius-lg);
         margin-bottom: 18px;
         box-shadow: var(--shadow-sm);
-        border: 1px solid rgba(0, 0, 0, 0.02);
+        border: 1px solid var(--card-border);
       }
 
       .filter-row {
@@ -449,21 +450,22 @@ import { CurrencyPipe } from '../../shared/pipes/common.pipes';
       .product-card {
         overflow: hidden;
         border-radius: 16px;
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--border-color);
         box-shadow: none;
         transition: transform 0.2s ease, box-shadow 0.2s ease;
+        background: var(--blinkit-card);
       }
 
       .product-card:hover {
         transform: translateY(-3px);
-        box-shadow: 0 16px 24px -20px rgba(15, 23, 42, 0.55);
+        box-shadow: var(--shadow-lg);
       }
 
       .product-image {
         width: 100%;
         height: 148px;
         overflow: hidden;
-        background: #f1f5f9;
+        background: var(--blinkit-muted-bg);
       }
 
       .product-image img {
@@ -478,7 +480,7 @@ import { CurrencyPipe } from '../../shared/pipes/common.pipes';
       }
 
       .category {
-        color: #64748b;
+        color: var(--text-secondary);
         font-size: 12px;
         margin: 0;
       }
@@ -491,7 +493,7 @@ import { CurrencyPipe } from '../../shared/pipes/common.pipes';
       }
 
       .price {
-        color: #0f172a;
+        color: var(--text-primary);
         font-weight: 700;
         font-size: 18px;
         margin: 0;
@@ -500,18 +502,18 @@ import { CurrencyPipe } from '../../shared/pipes/common.pipes';
       .stock {
         font-size: 12px;
         margin: 0;
-        color: #64748b;
+        color: var(--text-secondary);
       }
 
       .stock.low {
-        color: #dc2626;
+        color: var(--blinkit-error);
         font-weight: 600;
       }
 
       .out-of-stock {
         display: block;
         margin-top: 8px;
-        color: #dc2626;
+        color: var(--blinkit-error);
         font-size: 12px;
         font-weight: 600;
       }
@@ -525,9 +527,11 @@ import { CurrencyPipe } from '../../shared/pipes/common.pipes';
       .qty-input {
         width: 60px;
         padding: 8px 6px;
-        border: 1px solid #cbd5e1;
+        border: 1px solid var(--border-color);
         border-radius: 10px;
         text-align: center;
+        background: var(--blinkit-field-bg);
+        color: var(--text-primary);
       }
 
       .quantity-control button {

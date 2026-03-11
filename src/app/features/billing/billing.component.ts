@@ -188,7 +188,7 @@ import { CurrencyPipe } from '../../shared/pipes/common.pipes';
         border-radius: var(--radius-lg);
         background: var(--blinkit-card);
         box-shadow: var(--shadow-md);
-        border: 1px solid rgba(0, 0, 0, 0.02);
+        border: 1px solid var(--card-border);
         display: flex;
         flex-direction: column;
         height: 100%;
@@ -236,7 +236,7 @@ import { CurrencyPipe } from '../../shared/pipes/common.pipes';
       }
 
       table th {
-        background: #f9fafb;
+        background: var(--blinkit-table-head);
         padding: 12px;
         text-align: left;
         font-weight: 600;
@@ -252,7 +252,7 @@ import { CurrencyPipe } from '../../shared/pipes/common.pipes';
       }
 
       table tr:hover {
-        background: #fafbfc;
+        background: var(--blinkit-table-row-hover);
       }
 
       mat-form-field {

@@ -171,7 +171,7 @@ import { takeUntil } from 'rxjs/operators';
 
       .receipt-content {
         padding: 32px;
-        background: #fafbfc;
+        background: var(--blinkit-table-row-hover);
         font-family: 'Inter', sans-serif;
         font-size: 14px;
         line-height: 1.8;
@@ -303,7 +303,7 @@ import { takeUntil } from 'rxjs/operators';
 
       .footer .timestamp {
         font-size: 11px;
-        color: #999;
+        color: var(--text-secondary);
         margin-top: 10px;
       }
 
