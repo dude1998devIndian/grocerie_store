@@ -55,7 +55,7 @@ import { Product } from '../../../core/models/index';
             <mat-option value="piece">piece</mat-option>
           </mat-select>
         </mat-form-field>
-
+<!-- dist\grocery-store-pos -->
         <mat-form-field class="full-width">
           <mat-label>Stock</mat-label>
           <input matInput type="number" formControlName="stock" />
